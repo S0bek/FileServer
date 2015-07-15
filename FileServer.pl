@@ -82,6 +82,10 @@ while (1) {
                     send ($client_pipe , $usage , 0);
                 }
 
+                if ($cmd =~ m/Utilisateurs/) {
+                    send ($client_pipe , $cmd , 0);
+                }
+
                 if ($cmd eq "close") {
                     send ($client_pipe , "Ravi d'avoir pu servir maitre!\n" , 0);
                     send ($client_pipe , "quit" , 0);

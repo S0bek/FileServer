@@ -5,7 +5,7 @@ use strict;
 sub Functions {
   my ($class) = @_;
 
-  my $this = {};
+  my $this = {};#pas d'attribut pour la classe en question
 
   bless ($this , $class);
   return $this;
@@ -49,7 +49,6 @@ sub uniq {
         $length = @{$ref};
     }
 
-    print "Valeurs contenues dans temp: @temp\n";
     return @temp;
 }
 
@@ -59,14 +58,11 @@ sub logdelete {
   my ($class , $logfile) = @_;
 
   if (-e $logfile) {
-
       if (`rm -f $logfile`) {
-
           print "Ancien fichier de log $logfile supprime avec succes.\n\n";
-
       }
-
   }
+
 }
 
 #fonction contenant les informations d'utilisation du serveur FileServer pour assister l'utilisateur
@@ -129,12 +125,8 @@ sub command {
                 $i++
 
             }
-            my @sorted_users;
-            # @sorted_users = uniq (\@users);
-            @sorted_users = $class -> uniq(\@users);
-            print "Ensemble des utilisateurs connectes actuellement sur le systeme: @sorted_users\n";
-            #print @cmd_result;
-            $status_cmd = join ("" , @cmd_result);
+            my @sorted_users = $class -> uniq (\@users);
+            $status_cmd = join ("Utilisateurs actuellement connectes sur le serveur: " , @sorted_users) . "\n\n";
         }
 
         if ($cmd =~ m/bye\ amigo/) {
@@ -150,6 +142,5 @@ sub command {
 
     return $status_cmd;
 }
-
 
 1;
