@@ -7,7 +7,7 @@ sub Functions {
 
   my $this = {};#pas d'attribut pour la classe en question
 
-  bless ($this , $class);
+  bless($this , $class);
   return $this;
 
 }
@@ -27,7 +27,7 @@ sub uniq {
 
     my ($class , $ref) = @_;
 
-    my @temp = ("" , "user");
+    my @temp = ("" , "");
     my $length = @{$ref};
     my $temp_length = @temp;
     my $item;
@@ -35,7 +35,7 @@ sub uniq {
 
     while ($length > 0) {
 
-        my $value = shift (@{$ref}); #ou splice (@{$ref} , 0 , 1)
+        my $value = shift(@{$ref}); #ou splice (@{$ref} , 0 , 1)
 
         for ($var = 0 , $var < $temp_length , $var++) {
 
@@ -47,7 +47,7 @@ sub uniq {
         $length = @{$ref};
     }
 
-    shift (@temp);
+    shift(@temp);
     return @temp;
 }
 
@@ -89,9 +89,9 @@ sub logg {
     my $logdate = gmtime();
     my $fh;
 
-    open ($fh , ">>" , $logfile) or die "Impossible d'ouvrir le fichier $logfile pour ecriture\n";
+    open($fh , ">>" , $logfile) or die "Impossible d'ouvrir le fichier $logfile pour ecriture\n";
     print $fh  "$logdate:\t$message\n";
-    close ($fh);
+    close($fh);
 
 }
 
@@ -122,7 +122,7 @@ sub command {
                 $i++
 
             }
-            my @sorted_users = $class -> uniq (\@users);
+            my @sorted_users = $class->uniq(\@users);
             $status_cmd = "Utilisateurs actuellement connectes sur le serveur: @sorted_users\n\n";
         }
 

@@ -2,14 +2,14 @@
 
 use strict;
 use Socket;
-use IO::Select;
 use Classes::Functions;
+use IO::Select;
 
 $| = 1;#autoflush
 
-my $protocol = getprotobyname ("tcp");
+my $protocol = getprotobyname("tcp");
 my $port = 7200;
-my $address = sockaddr_in ($port , INADDR_ANY);
+my $address = sockaddr_in($port , INADDR_ANY);
 my $socket;
 my $logfile = "FileServer.log";
 
@@ -20,46 +20,47 @@ listen($socket , SOMAXCONN) or die "Impossible d'ouvrir le port d'écoute sur le
 print "Le serveur de transfert de fichier est demarre\n";
 
 #utilisation des fonctions de la classe appropriée
-my $Functions = Functions -> Functions();
+my $Functions = Functions->Functions();
 
 #suppression de l'ancien fichier de log au démarrage du serveur
-$Functions -> logdelete ($logfile);
+$Functions->logdelete ($logfile);
 
 # logg ("Le serveur a bien ete demarre sur le port $port");
-$Functions -> logg ("Le serveur a bien ete demarre sur le port $port");
+$Functions->logg("Le serveur a bien ete demarre sur le port $port");
 
 #corps principal du code
-my $pipe = IO::Select -> new();
-$pipe-> add ($socket);
+my $pipe = IO::Select->new();
+$pipe->add($socket);
 
 while (1) {
 
-    my @clients = $pipe -> can_read(0);#on active le pipe pour y stocker les connexions clientes
+    my @clients = $pipe->can_read(0);#on active le pipe pour y stocker les connexions clientes
     my $client_pipe;
+
     foreach $client_pipe (@clients) {
 
         if ($client_pipe == $socket) {
 
             my $client;
-            my $client_address = accept ($client , $socket);
+            my $client_address = accept($client , $socket);
 
-            my ($client_port , $iaddr) = sockaddr_in ($client_address);
-            my $client_hostname = gethostbyaddr ($iaddr , AF_INET);
+            my ($client_port , $iaddr) = sockaddr_in($client_address);
+            my $client_hostname = gethostbyaddr($iaddr , AF_INET);
 
-            my $message = "Nouvelle connexion cliente etablie";
-            $message = "$message $client_hostname connecte depuis le port distant $client_port\n";
+            #my $message = "Nouvelle connexion cliente etablie";
+            #$message = "$message $client_hostname connecte depuis le port distant $client_port\n";
 
             # print $message;
 
-            $Functions -> logg ($message);
-            my $header = $Functions -> banner();
-            send ($client , $header , 0);
-            send ($client , "Bonjour maitre que puis-je faire pour vous aujourd'hui?\n\n" , 0);
+            #$Functions -> logg($message);
+            my $header = $Functions->banner();
+            send($client , $header , 0);
+            #send($client , "Bonjour maitre que puis-je faire pour vous aujourd'hui?\n\n" , 0);
             # my $usage = usage ();
             my $usage = $Functions -> usage();
-            send ($client , $usage , 0);
+            send($client , $usage , 0);
 
-            $pipe -> add ($client);
+            $pipe->add($client);
 
         } else {
 
@@ -67,36 +68,35 @@ while (1) {
             my $reception;
             # my $cmd;
 
-            while ($reception = <$client_pipe>) {
+            chomp($reception = <$client_pipe>);
+            chomp($reception);
+            #chomp $reception;
 
-                chomp $reception;
+            #traitement de la reponse ou commande client
 
-                #traitement de la reponse ou commande client
+            #$cmd = command ($reception);
+            my $cmd = $Functions->command($reception);
 
-                # $cmd = command ($reception);
-                my $cmd = $Functions -> command ($reception);
 
-                if ($cmd eq "usage") {
-                    # my $usage = usage ();
-                    my $usage = $Functions -> usage();
-                    send ($client_pipe , $usage , 0);
-                }
+            if ($cmd eq "usage") {
+                # my $usage = usage ();
+                my $usage = $Functions->usage();
+                send($client_pipe , $usage , 0);
+            }
 
-                if ($cmd =~ m/Utilisateurs/) {
-                    send ($client_pipe , $cmd , 0);
-                }
+            if ($cmd =~ m/Utilisateurs/) {
+                send($client_pipe , $cmd , 0);
+            }
 
-                if ($cmd eq "close") {
-                    send ($client_pipe , "Ravi d'avoir pu servir maitre!\n" , 0);
-                    send ($client_pipe , "quit" , 0);
-                    #$pipe->delete ($client);
-                }
+            if ($cmd eq "close") {
+                send($client_pipe , "Ravi d'avoir pu servir maitre!\n" , 0);
+                send($client_pipe , "quit" , 0);
+                #$pipe->delete ($client);
+            }
 
-                if ($cmd eq "discloz") {
-                    close ($socket);# partie a debugger pour forcer la fermeture du socket serveur
-                    exit (0);
-                }
-
+            if ($cmd eq "discloz") {
+                close($socket);# partie a debugger pour forcer la fermeture du socket serveur
+                exit (0);
             }
 
         }
