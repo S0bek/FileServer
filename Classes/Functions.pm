@@ -24,8 +24,10 @@ sub banner {
 
 #fonction qui trie les données d'un tableau donnée en entrée en sortant un tableau ne contenant les données qu'en un seul exemplaire
 sub uniq {
+
     my ($class , $ref) = @_;
-    my @temp;
+
+    my @temp = ("" , "user");
     my $length = @{$ref};
     my $temp_length = @temp;
     my $item;
@@ -33,22 +35,19 @@ sub uniq {
 
     while ($length > 0) {
 
-        my $value = splice (@{$ref} , 0 , 1);
+        my $value = shift (@{$ref}); #ou splice (@{$ref} , 0 , 1)
 
         for ($var = 0 , $var < $temp_length , $var++) {
 
-            if ($value ne 0) {
-
-                if ($temp[$var] ne $value) {
-                    $temp[$var] = $value;
-                }
-
-            }
+          if ($temp[$var] ne $value ) {
+              $temp[$var] = $value;
+          }
 
         }
         $length = @{$ref};
     }
 
+    shift (@temp);
     return @temp;
 }
 
@@ -118,15 +117,13 @@ sub command {
 
                 unless ($i <= 2) {
                     my $user = (split(" "))[0];
-                    #print "Utilisateur: $user\n";
-
                     push (@users , $user);
                 }
                 $i++
 
             }
             my @sorted_users = $class -> uniq (\@users);
-            $status_cmd = join ("Utilisateurs actuellement connectes sur le serveur: " , @sorted_users) . "\n\n";
+            $status_cmd = "Utilisateurs actuellement connectes sur le serveur: @sorted_users\n\n";
         }
 
         if ($cmd =~ m/bye\ amigo/) {

@@ -93,8 +93,7 @@ while (1) {
                 }
 
                 if ($cmd eq "discloz") {
-                    #close ($client_pipe);
-                    close ($socket);
+                    close ($socket);# partie a debugger pour forcer la fermeture du socket serveur
                     exit (0);
                 }
 
