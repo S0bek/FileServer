@@ -47,12 +47,9 @@ while (1) {
             my ($client_port , $iaddr) = sockaddr_in($client_address);
             my $client_hostname = gethostbyaddr($iaddr , AF_INET);
 
-            #my $message = "Nouvelle connexion cliente etablie";
-            #$message = "$message $client_hostname connecte depuis le port distant $client_port\n";
-
-            # print $message;
-
-            #$Functions -> logg($message);
+            my $message = "Nouvelle connexion cliente etablie.";
+            $message = "$message $client_hostname connecte depuis le port distant $client_port\n";
+            $Functions -> logg($message);
             my $header = $Functions->banner();
             send($client , $header , 0);
             #send($client , "Bonjour maitre que puis-je faire pour vous aujourd'hui?\n\n" , 0);
@@ -66,20 +63,15 @@ while (1) {
 
             #reception des donnees clientes
             my $reception;
-            # my $cmd;
 
             chomp($reception = <$client_pipe>);
             chomp($reception);
-            #chomp $reception;
 
             #traitement de la reponse ou commande client
-
-            #$cmd = command ($reception);
             my $cmd = $Functions->command($reception);
 
 
             if ($cmd eq "usage") {
-                # my $usage = usage ();
                 my $usage = $Functions->usage();
                 send($client_pipe , $usage , 0);
             }
